@@ -1,7 +1,7 @@
 .PHONY: build
 build:
 	mkdir -p build
-	rlc --rich retula.ref -o build/retula
+	rlmake --tmp-dir build Retula.ref -o build/retula
 
 
 .PHONY: run
