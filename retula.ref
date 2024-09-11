@@ -47,8 +47,9 @@ EvalRuleDefinition {
 
 
 EvalTraceDefinition {
-  t.State (e.Rules) ((e.TapeL) t.TapeH (e.TapeR)) e.InitState
-    = <EvalTrace (e.InitState) (e.Rules) ((e.TapeL) t.TapeH (e.TapeR))>;
+  t.State (e.Rules) ((e.TapeL) t.TapeH (e.TapeR)) e.InitState ' ' e.InitTape
+    = <Split e.InitTape> : t.InitTapeH e.InitTapeR
+    = <EvalTrace (e.InitState) (e.Rules) (() t.InitTapeH (e.InitTapeR))>;
 }
 
 
@@ -108,4 +109,12 @@ FindRule {
 Eq {
   (e.A) e.A = True;
   (e.A) e.B = False;
+}
+
+
+Split {
+  e.Str = <Trim e.Str> : {
+    e.Part ' ' e.Rest = (e.Part) <Split e.Rest>;
+    e.Part = (e.Part);
+  };
 }

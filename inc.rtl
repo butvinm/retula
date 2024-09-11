@@ -1,4 +1,4 @@
 case Inc 0 1 -> Halt
 case Inc 1 0 -> Inc
 
-trace Inc
+trace Inc 0 0 0 1 &
