@@ -8,7 +8,6 @@ on:
     branches:
       - master
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,4 +23,6 @@ jobs:
           rlmake --version || true
 
       - name: Build Retula
-        run: make build
+        run: |
+          echo "PATH: $PATH"
+          make build
