@@ -18,11 +18,10 @@ jobs:
       - name: Build Refal-5 compiler
         run: |
           curl -L https://bmstu-iu9.github.io/refal-5-lambda/setup.bash | bash
+          echo "$HOME/.local/share/refal-5-lambda/bin" >> $GITHUB_PATH
+          echo "RL_MODULE_PATH=~/.local/share/refal-5-lambda/lib" >> $GITHUB_ENV
         shell: bash
 
-      - name: Add Refal-5 compiler to PATH
-        run: echo "$HOME/.local/share/refal-5-lambda/bin" >> $GITHUB_PATH
-
-      - name: Build Retula
+      - name: Run tests
         run: |
-          make build
+          make test
