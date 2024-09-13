@@ -17,12 +17,15 @@ jobs:
 
       - name: Build Refal-5 compiler
         run: |
-          curl -L https://bmstu-iu9.github.io/refal-5-lambda/setup.bash | bash
-          echo "export PATH=\$PATH:~/.local/share/refal-5-lambda/bin" >> $GITHUB_ENV
-          echo "export RL_MODULE_PATH=\$RL_MODULE_PATH:~/.local/share/refal-5-lambda/lib" >> $GITHUB_ENV
+            curl -L https://bmstu-iu9.github.io/refal-5-lambda/setup.bash | bash
+            echo "PATH=$PATH:~/.local/share/refal-5-lambda/bin" >> $GITHUB_ENV
+            echo "RL_MODULE_PATH=$RL_MODULE_PATH:~/.local/share/refal-5-lambda/lib" >> $GITHUB_ENV
+            cat $GITHUB_ENV
         shell: bash
 
       - name: Build Retula
         run: |
-          echo "PATH: $PATH"
+          cat $GITHUB_ENV
+          echo "PATH = $PATH"
+          echo "RL_MODULE_PATH = $RL_MODULE_PATH"
           make build
