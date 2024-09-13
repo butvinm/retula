@@ -7,3 +7,8 @@ build:
 .PHONY: run
 run: build
 	./build/retula inc.rtl
+
+
+.PHONY: test
+test: build
+	python tests/rere.py replay tests/test.list
