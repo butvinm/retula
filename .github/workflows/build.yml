@@ -8,9 +8,6 @@ on:
     branches:
       - master
 
-env:
-  PATH: ~/.local/share/refal-5-lambda/bin:$PATH
-  RL_MODULE_PATH: ~/.local/share/refal-5-lambda/lib:$RL_MODULE_PATH
 
 jobs:
   build:
@@ -22,6 +19,8 @@ jobs:
       - name: Build Refal-5 compiler
         run: |
           curl -L https://bmstu-iu9.github.io/refal-5-lambda/setup.bash | bash
+          echo "export PATH=$PATH:~/.local/share/refal-5-lambda/bin" >> $GITHUB_ENV
+          echo "export RL_MODULE_PATH=$RL_MODULE_PATH:~/.local/share/refal-5-lambda/lib" >> $GITHUB_ENV
           rlmake --version || true
 
       - name: Build Retula
