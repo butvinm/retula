@@ -21,13 +21,9 @@ jobs:
           echo "" > ~/.bashrc
           echo "export PATH=\$PATH:~/.local/share/refal-5-lambda/bin" >> ~/.bashrc
           echo "export RL_MODULE_PATH=\$RL_MODULE_PATH:~/.local/share/refal-5-lambda/lib" >> ~/.bashrc
-          cat ~/.bashrc
           source ~/.bashrc
           rlmake --version || true
 
       - name: Build Retula
         run: |
-          cat ~/.bashrc
-          source ~/.bashrc
-          echo "PATH: $PATH"
           make build
