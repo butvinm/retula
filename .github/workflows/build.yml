@@ -15,6 +15,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Cache Refal-5 compiler
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.local/share/refal-5-lambda
+          key: ${{ runner.os }}-refal-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-refal-
+
       - name: Build Refal-5 compiler
         run: |
           curl -L https://bmstu-iu9.github.io/refal-5-lambda/setup.bash | bash
