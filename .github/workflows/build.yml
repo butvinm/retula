@@ -8,16 +8,17 @@ on:
     branches:
       - master
 
-
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - name: Build Refal-5\ compiler
-      run: curl -L https://bmstu-iu9.github.io/refal-5-lambda/setup.bash | bash
+      - name: Build Refal-5\ compiler
+        run: |
+          curl -L https://bmstu-iu9.github.io/refal-5-lambda/setup.bash | bash
+          source /home/runner/.bashrc
 
-    - name: Build Retula
-      run: make build
+      - name: Build Retula
+        run: make build
