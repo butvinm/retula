@@ -20,7 +20,7 @@ jobs:
           curl -L https://bmstu-iu9.github.io/refal-5-lambda/setup.bash | bash
           export PATH=$PATH:~/.local/share/refal-5-lambda/bin
           export RL_MODULE_PATH=$RL_MODULE_PATH:~/.local/share/refal-5-lambda/lib
-          rlmake --version  # Optional check to verify installation
+          rlmake --version
 
       - name: Build Retula
         run: |
