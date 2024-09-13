@@ -26,7 +26,9 @@ jobs:
 
       - name: Build Refal-5 compiler
         run: |
-          curl -L https://bmstu-iu9.github.io/refal-5-lambda/setup.bash | bash
+          if [ ! -d "$HOME/.local/share/refal-5-lambda/bin" ]; then
+            curl -L https://example.com/path/to/refal-5-binaries.tar.gz | tar xz -C ~/.local/share/refal-5-lambda
+          fi
           echo "$HOME/.local/share/refal-5-lambda/bin" >> $GITHUB_PATH
           echo "RL_MODULE_PATH=~/.local/share/refal-5-lambda/lib" >> $GITHUB_ENV
         shell: bash
