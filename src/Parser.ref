@@ -43,6 +43,10 @@ ParseLine {
 
 SwParseLine {
   (t.Machine t.Loc)
+  (/* empty */)
+    = (Success t.Machine);
+
+  (t.Machine t.Loc)
   ('trace ' e.TraceDefinition)
     = <ParseTrace (t.Machine t.Loc) (e.TraceDefinition)>;
 
@@ -51,8 +55,8 @@ SwParseLine {
     = <ParseRule (t.Machine t.Loc) (e.RuleDefinition)>;
 
   (t.Machine t.Loc)
-  (/* empty */)
-    = (Success t.Machine);
+  (e.BadDefinition)
+    = (Fails t.Loc 'Invalid statement. Expected: `trace <state> <tape>` or `case <state> <read> <write> <step> <next>`');
 }
 
 
@@ -64,7 +68,7 @@ ParseRule {
 
   (t.Machine t.Loc)
   e.BadDefinition
-    = (Fails t.Loc 'Invalid rule definition. Expected: <state> <read> <write> <step> <next>');
+    = (Fails t.Loc 'Invalid rule definition. Expected: `case <state> <read> <write> <step> <next>`');
 }
 
 
@@ -77,5 +81,5 @@ ParseTrace {
 
   (t.Machine t.Loc)
   e.BadDefinition
-    = (Fails t.Loc 'Invalid trace definition. Expected: trace <state> <tape>');
+    = (Fails t.Loc 'Invalid trace definition. Expected: `trace <state> <tape>`');
 }

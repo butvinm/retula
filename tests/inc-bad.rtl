@@ -1,0 +1,6 @@
+case Inc 0 1 -> Ha
+case 1 0 -> Inc
+
+wtf???
+
+trace Inc

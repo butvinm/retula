@@ -1,5 +1,5 @@
 *$FROM LibraryEx
-$EXTERN LoadFile, ExistFile, MapAccum, ArgList;
+$EXTERN LoadFile, ExistFile, MapAccum, ArgList, Map, Putout;
 
 *$FROM Machine
 $EXTERN
@@ -19,14 +19,15 @@ $EXTERN Fatal, Split;
 *$FROM Parser
 $EXTERN ParseSource;
 
+*$FROM Loc
+$EXTERN Loc-Repr;
+
 
 $ENTRY Go {
   = <ArgList> : {
     (e.Executable) (e.SourceFile)
       = <ExistFile e.SourceFile> : {
-        True
-          = <ParseSource (e.SourceFile) <LoadFile e.SourceFile>> : (t.Machine t.Loc)
-          = <Prout <Machine-Repr t.Machine>>;
+        True = <Main e.SourceFile>;
         False
           = <Prout 'File ' e.SourceFile ' does not exist'> :
           = <Exit 1>;
@@ -39,83 +40,17 @@ $ENTRY Go {
 }
 
 
-Eval {
-  e.Source = <MapAccum &EvalLine <Machine-Create> e.Source>;
-}
+Main {
+  e.SourceFile
+    = <ParseSource (e.SourceFile) <LoadFile e.SourceFile>> : {
+      (t.Machine t._ (/* empty */)) = <Prout <Machine-Repr t.Machine>>;
 
-
-EvalLine {
-  t.Machine t.Line = <SwEvalLine t.Machine t.Line>;
-}
-
-
-SwEvalLine {
-  t.Machine ('case ' e.RuleDefinition) = <EvalRuleDefinition t.Machine (e.RuleDefinition)>;
-  t.Machine ('trace ' e.TraceDefinition) = <EvalTraceDefinition t.Machine (e.TraceDefinition)>;
-  t.Machine ( ) = t.Machine;
-}
-
-
-EvalRuleDefinition {
-  t.Machine (e.RuleState ' ' e.RuleRead ' ' e.RuleWrite ' ' e.RuleStep ' ' e.RuleNext)
-    = <Rule-Create (e.RuleState) (e.RuleRead) (e.RuleWrite) (e.RuleStep) (e.RuleNext)> : t.Rule
-    = <Machine-AppendRule t.Machine t.Rule>;
-}
-
-
-EvalTraceDefinition {
-  t.Machine (e.InitState ' ' e.InitTape)
-    = <Split e.InitTape> : t.InitTapeH e.InitTapeR
-    = <Machine-Tape t.Machine (() t.InitTapeH (e.InitTapeR))> : t.Machine^
-    = <Machine-State t.Machine (e.InitState)> : t.Machine^
-    = <EvalTrace t.Machine>;
-}
-
-
-EvalTrace {
-  [Machine (State 'Halt') (Rules e.Rules) (Tape e.Tape)]
-    = <Prout
-      'Machine stopped:\n'
-      '    State: Halt\n'
-      '    Rules: ' e.Rules '\n'
-      '    Tape: ' e.Tape
-    > :
-    = <Exit 0>;
-
-  t.Machine
-    = t.Machine : [Machine (State e.State) (Rules e.Rules) (Tape (e.TapeL) (e.TapeH) (e.TapeR))]
-    = <FindRule t.Machine> : {
-      None = t.Machine;
-      [Rule (State e._) (Read e._) (Write e.Write) (Step e.Step) (Next e.Next)]
-        = <Machine-State t.Machine (e.Next)> : t.Machine^
-        = e.Step : {
-          '->'
-            = e.TapeR : (e.TapeH^) e.TapeR^
-            = <Machine-Tape t.Machine ((e.TapeL e.Write) (e.TapeH) (e.TapeR))> : t.Machine^
-            = <EvalTrace t.Machine>;
-
-          '<-'
-            = e.TapeL : e.TapeL^ (e.TapeH^)
-            = <Machine-Tape t.Machine ((e.TapeL) (e.TapeH) (e.Write e.TapeR))> : t.Machine^
-            = <EvalTrace t.Machine>;
-
-          '.'
-            = <Machine-Tape t.Machine ((e.TapeL) (e.Write) (e.TapeR))> : t.Machine^
-            = <EvalTrace t.Machine>;
-        };
-    };
-}
-
-
-FindRule {
-  t.Machine
-    = t.Machine : [Machine (State e.State) (Rules e.Rules) (Tape (e.TapeL) (e.TapeH) (e.TapeR))]
-    = e.Rules : {
-      /* empty */ = None;
-      t.Rule e.RestRules
-        = t.Rule : {
-          [Rule (State e.State) (Read e.TapeH) e.Params-E] = t.Rule;
-          e._ = <FindRule <Machine-Rules t.Machine (e.RestRules)>>;
-        };
+      (t.Machine t._ (e.Errors))
+        = <Map
+          {
+            (t.Loc e.Error) = <Putout stderr <Loc-Repr t.Loc> ': ' e.Error>;
+          }
+          e.Errors
+        >;
     };
 }
