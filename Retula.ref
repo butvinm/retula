@@ -1,15 +1,24 @@
 *$FROM LibraryEx
-$EXTERN LoadFile, MapAccum, Inc, ArgList, Trim;
+$EXTERN LoadFile, ExistFile, MapAccum, Inc, ArgList, Trim;
 
 
 *$FROM Machine.ref
-$EXTERN Rule, Rule-Create, Machine, Machine-Create, Machine-State, Machine-Rules, Machine-AppendRule, Machine-Tape;
+$EXTERN Rule, Rule-Create, Machine, Machine-Create, Machine-State, Machine-Rules, Machine-AppendRule, Machine-Tape, Machine-Print;
 
 
 $ENTRY Go {
   = <ArgList> : {
-    t._ (e.SourceFile) = <Eval <LoadFile e.SourceFile>>;
-    e._ = <Prout 'Usage: retula <file>'>;
+    (e.Executable) (e.SourceFile)
+      = <ExistFile e.SourceFile> : {
+        True = <Eval <LoadFile e.SourceFile>>;
+        False
+          = <Prout 'File ' e.SourceFile ' does not exist'> :
+          = <Exit 1>;
+      };
+
+    (e.Executable) e._
+      = <Prout 'Usage: ' e.Executable ' <file>'> :
+      = <Exit 1>;
   };
 }
 
