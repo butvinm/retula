@@ -1,3 +1,7 @@
+*$FROM Utils
+$EXTERN Join;
+
+
 $EENUM Rule;
 
 
@@ -44,11 +48,21 @@ $ENTRY Machine-Rules {
 
 
 $ENTRY Machine-AppendRule {
-  [Machine e.Params-B (Rules e.Rules) e.Params-E] t.Rule = [Machine e.Params-B (Rules e.Rules t.Rule) e.Params-E];
+  [Machine e.Params-B (Rules e.Rules) e.Params-E] t.Rule = [Machine e.Params-B (Rules e.Rules (t.Rule)) e.Params-E];
 }
 
 
 $ENTRY Machine-Tape {
   [Machine e.Params-B (Tape e.Tape) e.Params-E] = e.Tape;
   [Machine e.Params-B (Tape e._) e.Params-E] (e.Tape) = [Machine e.Params-B (Tape e.Tape) e.Params-E];
+}
+
+
+$ENTRY Machine-Repr {
+  [Machine (State e.State) (Rules e.Rules) (Tape (e.TapeL) (e.TapeH) (e.TapeR))]
+    = 'Machine:\n'
+      '    State: ' e.State '\n'
+      '    Rules:\n'
+      '        ' <Join ('\n        ') e.Rules> '\n'
+      '    Tape: ' e.TapeL (e.TapeH) e.TapeR;
 }

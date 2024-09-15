@@ -1,0 +1,20 @@
+*$FROM LibraryEx
+$EXTERN Inc;
+
+
+$EENUM Loc;
+
+
+$ENTRY Loc-Create {
+  e.File = [Loc (File e.File) (Line 0)];
+}
+
+
+$ENTRY Loc-IncLine {
+  [Loc (File e.File) (Line e.Line)] = [Loc (File e.File) (Line <Inc e.Line>)];
+}
+
+
+$ENTRY Loc-Repr {
+  [Loc (File e.File) (Line e.Line)] = e.File ':' <Symb e.Line>;
+}

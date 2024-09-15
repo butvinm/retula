@@ -1,0 +1,32 @@
+*$FROM LibraryEx
+$EXTERN Trim;
+
+
+$ENTRY Eq {
+  (e.A) e.A = True;
+  (e.A) e.B = False;
+}
+
+
+$ENTRY Fatal {
+  e.Message
+    = <Putout stderr e.Message> :
+    = <Exit 1>;
+}
+
+
+/* String utils */
+
+$ENTRY Join {
+  (e.Sep) /* empty */ = /* empty */;
+  (e.Sep) (e.H) = e.H;
+  (e.Sep) (e.H) e.T = e.H e.Sep <Join (e.Sep) e.T>;
+}
+
+
+$ENTRY Split {
+  e.Str = <Trim e.Str> : {
+    e.Part ' ' e.Rest = (e.Part) <Split e.Rest>;
+    e.Part = (e.Part);
+  };
+}

@@ -1,16 +1,32 @@
 *$FROM LibraryEx
-$EXTERN LoadFile, ExistFile, MapAccum, Inc, ArgList, Trim;
+$EXTERN LoadFile, ExistFile, MapAccum, ArgList;
 
+*$FROM Machine
+$EXTERN
+  Rule,
+  Rule-Create,
+  Machine,
+  Machine-Create,
+  Machine-State,
+  Machine-Rules,
+  Machine-AppendRule,
+  Machine-Tape,
+  Machine-Repr;
 
-*$FROM Machine.ref
-$EXTERN Rule, Rule-Create, Machine, Machine-Create, Machine-State, Machine-Rules, Machine-AppendRule, Machine-Tape, Machine-Print;
+*$FROM Utils
+$EXTERN Fatal, Split;
+
+*$FROM Parser
+$EXTERN ParseSource;
 
 
 $ENTRY Go {
   = <ArgList> : {
     (e.Executable) (e.SourceFile)
       = <ExistFile e.SourceFile> : {
-        True = <Eval <LoadFile e.SourceFile>>;
+        True
+          = <ParseSource (e.SourceFile) <LoadFile e.SourceFile>> : (t.Machine t.Loc)
+          = <Prout <Machine-Repr t.Machine>>;
         False
           = <Prout 'File ' e.SourceFile ' does not exist'> :
           = <Exit 1>;
@@ -24,7 +40,7 @@ $ENTRY Go {
 
 
 Eval {
-  e.Code = <MapAccum &EvalLine <Machine-Create> e.Code>;
+  e.Source = <MapAccum &EvalLine <Machine-Create> e.Source>;
 }
 
 
@@ -36,7 +52,7 @@ EvalLine {
 SwEvalLine {
   t.Machine ('case ' e.RuleDefinition) = <EvalRuleDefinition t.Machine (e.RuleDefinition)>;
   t.Machine ('trace ' e.TraceDefinition) = <EvalTraceDefinition t.Machine (e.TraceDefinition)>;
-  t.Machine (/* empty */) = t.Machine;
+  t.Machine ( ) = t.Machine;
 }
 
 
@@ -102,17 +118,4 @@ FindRule {
           e._ = <FindRule <Machine-Rules t.Machine (e.RestRules)>>;
         };
     };
-}
-
-Eq {
-  (e.A) e.A = True;
-  (e.A) e.B = False;
-}
-
-
-Split {
-  e.Str = <Trim e.Str> : {
-    e.Part ' ' e.Rest = (e.Part) <Split e.Rest>;
-    e.Part = (e.Part);
-  };
 }
