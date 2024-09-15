@@ -193,7 +193,7 @@ SwParseLine {
 
 ## Comments
 
-- Use /* empty */ to indicate an empty list. Unfortunately, Refal compiler does not support nested multi-line comments, so that approach would lead to a syntax error, but there is nothing we can do about it.
+- Use /* empty */ to indicate an empty list. If there is some more meaningful and short word, use it instead. Unfortunately, Refal compiler does not support nested multi-line comments, so that approach would lead to a syntax error, but there is nothing we can do about it.
 - Prefer to use /**/ comments even for single-line comment (just easy for IDE support)
 
 
