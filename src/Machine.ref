@@ -61,8 +61,8 @@ $ENTRY Machine-Tape {
 $ENTRY Machine-Repr {
   [Machine (State e.State) (Rules e.Rules) (Tape (e.TapeL) (e.TapeH) (e.TapeR))]
     = 'Machine:\n'
-      '    State: ' e.State '\n'
       '    Rules:\n'
       '        ' <Join ('\n        ') e.Rules> '\n'
+      '    State: ' e.State '\n'
       '    Tape: ' e.TapeL (e.TapeH) e.TapeR;
 }
