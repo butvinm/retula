@@ -2,19 +2,10 @@
 $EXTERN LoadFile, ExistFile, MapAccum, ArgList, Map, Putout;
 
 *$FROM Machine
-$EXTERN
-  Rule,
-  Rule-Create,
-  Machine,
-  Machine-Create,
-  Machine-State,
-  Machine-Rules,
-  Machine-AppendRule,
-  Machine-Tape,
-  Machine-Repr;
+$EXTERN Machine-Repr;
 
 *$FROM Utils
-$EXTERN Fatal, Split;
+$EXTERN Prerr, Join;
 
 *$FROM Parser
 $EXTERN ParseSource;
@@ -22,33 +13,28 @@ $EXTERN ParseSource;
 *$FROM Loc
 $EXTERN Loc-Repr;
 
+*$FROM Options
+$EXTERN ParseOptions, Options-SourceFile;
+
 
 $ENTRY Go {
-  = <ArgList> : {
-    (e.Executable) (e.SourceFile)
-      = <ExistFile e.SourceFile> : {
-        True = <Main e.SourceFile>;
-        False
-          = <Prout 'File ' e.SourceFile ' does not exist'> :
-          = <Exit 1>;
-      };
-
-    (e.Executable) e._
-      = <Prout 'Usage: ' e.Executable ' <file>'> :
-      = <Exit 1>;
+  = <ParseOptions <ArgList>> : {
+    (Success t.Options) = <Main t.Options>;
+    (Fails e.Error) = <Prerr e.Error> : = <Exit 1>;
   };
 }
 
 
 Main {
-  e.SourceFile
+  t.Options
+    = <Options-SourceFile t.Options> : e.SourceFile
     = <ParseSource (e.SourceFile) <LoadFile e.SourceFile>> : {
       (t.Machine t._ (/* empty */)) = <Prout <Machine-Repr t.Machine>>;
 
       (t.Machine t._ (e.Errors))
         = <Map
           {
-            (t.Loc e.Error) = <Putout stderr <Loc-Repr t.Loc> ': ' e.Error>;
+            (t.Loc e.Error) = <Prerr <Loc-Repr t.Loc> ': ' e.Error>;
           }
           e.Errors
         >;

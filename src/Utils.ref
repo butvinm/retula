@@ -8,10 +8,8 @@ $ENTRY Eq {
 }
 
 
-$ENTRY Fatal {
-  e.Message
-    = <Putout stderr e.Message> :
-    = <Exit 1>;
+$ENTRY Prerr {
+  e.Message = <Putout stderr e.Message>;
 }
 
 
