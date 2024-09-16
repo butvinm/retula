@@ -11,6 +11,7 @@ $EXTERN Fatal, Split;
 $EXTERN
   Rule,
   Rule-Create,
+  Rule-ParseStep,
   Machine,
   Machine-Create,
   Machine-State,
@@ -63,7 +64,8 @@ SwParseLine {
 ParseRule {
   (t.Machine t.Loc)
   (e.RuleState ' ' e.RuleRead ' ' e.RuleWrite ' ' e.RuleStep ' ' e.RuleNext)
-    = <Rule-Create (e.RuleState) (e.RuleRead) (e.RuleWrite) (e.RuleStep) (e.RuleNext)> : t.Rule
+    = <Rule-ParseStep e.RuleStep> : s.RuleStep
+    = <Rule-Create (e.RuleState) (e.RuleRead) (e.RuleWrite) (s.RuleStep) (e.RuleNext)> : t.Rule
     = (Success <Machine-AppendRule t.Machine t.Rule>);
 
   (t.Machine t.Loc)

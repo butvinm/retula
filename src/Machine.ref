@@ -1,3 +1,6 @@
+*$FROM LibraryEx
+$EXTERN Map;
+
 *$FROM Utils
 $EXTERN Join;
 
@@ -19,7 +22,37 @@ $ENTRY Rule-Create {
 
 $ENTRY Rule-State {
   [Rule e.Params-B (State e.State) e.Params-E] = e.State;
-  [Rule e.Params-B (State e._) e.Params-E] e.State = [Rule e.Params-B (State e.State) e.Params-E];
+}
+
+
+$ENTRY Rule-Read {
+  [Rule e.Params-B (Read e.Read) e.Params-E] = e.Read;
+}
+
+
+$ENTRY Rule-Step {
+  [Rule e.Params-B (Step s.Step) e.Params-E] = s.Step;
+}
+
+
+$ENTRY Rule-ParseStep {
+  '<-' = Left;
+  '->' = Right;
+  '.' = Stay;
+}
+
+
+$ENTRY Rule-ReprStep {
+  Left = '<-';
+  Right = '->';
+  Stay = '.';
+}
+
+
+$ENTRY Rule-Repr {
+  [Rule (State e.State) (Read e.Read) (Write e.Write) (Step s.Step) (Next e.Next)]
+    = <Rule-ReprStep s.Step> : e.Step
+    = 'case ' e.State ' ' e.Read ' ' e.Write ' ' e.Step ' ' e.Next;
 }
 
 
@@ -48,7 +81,7 @@ $ENTRY Machine-Rules {
 
 
 $ENTRY Machine-AppendRule {
-  [Machine e.Params-B (Rules e.Rules) e.Params-E] t.Rule = [Machine e.Params-B (Rules e.Rules (t.Rule)) e.Params-E];
+  [Machine e.Params-B (Rules e.Rules) e.Params-E] t.Rule = [Machine e.Params-B (Rules e.Rules t.Rule) e.Params-E];
 }
 
 
@@ -60,9 +93,7 @@ $ENTRY Machine-Tape {
 
 $ENTRY Machine-Repr {
   [Machine (State e.State) (Rules e.Rules) (Tape (e.TapeL) (e.TapeH) (e.TapeR))]
-    = 'Machine:\n'
-      '    Rules:\n'
-      '        ' <Join ('\n        ') e.Rules> '\n'
-      '    State: ' e.State '\n'
-      '    Tape: ' e.TapeL (e.TapeH) e.TapeR;
+    = <Map { t.Rule = (<Rule-Repr t.Rule>) } e.Rules> : e.RulesReprs
+    = <Join ('\n') e.RulesReprs> '\n'
+      'trace ' e.State ' ' <Join (' ') e.TapeL (e.TapeH) e.TapeR>;
 }
