@@ -50,37 +50,22 @@ Example of a simple program that increments a binary number:
 case Inc 0 1 -> Halt
 case Inc 1 0 -> Inc
 
-trace Inc
+trace Inc 1 1 0 1 &
 ```
 
 Running it will produce the following output:
 
 ```
-Trace step:
-    State: (Inc)
-    Rules: ((Rule (Inc)(0)(1)(->)(Halt))(Rule (Inc)(1)(0)(->)(Inc)))
-    Tape: (()(1)((1)(0)(0)(0)(1)(&)))
-    Matched rule: (Rule (Inc)(1)(0)(->)(Inc))
-Trace step:
-    State: (Inc)
-    Rules: ((Rule (Inc)(0)(1)(->)(Halt))(Rule (Inc)(1)(0)(->)(Inc)))
-    Tape: (((0))(1)((0)(0)(0)(1)(&)))
-    Matched rule: (Rule (Inc)(1)(0)(->)(Inc))
-Trace step:
-    State: (Inc)
-    Rules: ((Rule (Inc)(0)(1)(->)(Halt))(Rule (Inc)(1)(0)(->)(Inc)))
-    Tape: (((0)(0))(0)((0)(0)(1)(&)))
-    Matched rule: (Rule (Inc)(0)(1)(->)(Halt))
-Machine stopped:
-    State: Halt
-    Rules: ((Rule (Inc)(0)(1)(->)(Halt))(Rule (Inc)(1)(0)(->)(Inc)))
-    Tape: (((0)(0)(1))(0)((0)(1)(&)))
+trace Inc () >>(1)<< ((1)(0)(1)(&))
+trace Inc ((0)) >>(1)<< ((0)(1)(&))
+trace Inc ((0)(0)) >>(0)<< ((1)(&))
+trace Halt ((0)(0)(1)) >>(1)<< ((&))
 ```
 
 ## Roadmap
 
 - [ ] Better trace output
-- [ ] Add support initial tape content
+- [ ] Allow specify initial tape content
 - [ ] S-expressions in the rules and pattern matching on them (e.g. `case Inc (a b) (b a) -> Inc`)
 - [ ] Sets and rule-comprehensions (e.g. `set Bin = {0, 1}; for a, b in Bin case Inc a b -> Inc`)
 - [ ] Arithmetic operations on the symbols (e.g. `case Inc a (a + 1) -> Halt`)
