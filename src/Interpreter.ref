@@ -1,0 +1,77 @@
+*$FROM Machine
+$EXTERN
+  Machine,
+  Machine-State,
+  Machine-Tape,
+  Machine-Rules,
+  Machine-TraceRepr,
+  Rule-State,
+  Rule-Read,
+  Rule-Write,
+  Rule-Step,
+  Rule-Next;
+
+*$FROM Utils
+$EXTERN Find;
+
+
+$ENTRY Trace {
+  t.Machine
+    = <Prout <Machine-TraceRepr t.Machine>> :
+    = <TraceSw t.Machine>;
+}
+
+TraceSw {
+  t.Machine, <Machine-State t.Machine> : 'Halt' = t.Machine;
+
+  t.Machine, <Machine-State t.Machine> : 'RI' = t.Machine;
+
+  t.Machine
+    = <TraceStep t.Machine> : t.Machine^
+    = <Trace t.Machine>;
+}
+
+
+$ENTRY TraceStep {
+  t.Machine
+    = <Find
+      (&MatchRule (<Machine-State t.Machine>) (<Machine-Tape t.Machine>))
+      <Machine-Rules t.Machine>
+    > : {
+      (Some t.Rule) = <ApplyRule t.Machine t.Rule>;
+      (None) = <Machine-State t.Machine 'RI'>;
+    };
+}
+
+
+MatchRule {
+  (e.State) ((e.TapeL) (e.TapeH) (e.TapeR)) t.Rule
+    , <Rule-State t.Rule> : e.State
+    , <Rule-Read t.Rule> : e.TapeH
+    = True;
+
+  (e.State) (e.Tape) t.Rule = False;
+}
+
+
+ApplyRule {
+  t.Machine t.Rule
+    = <Machine-State t.Machine <Rule-Next t.Rule>> : t.Machine^
+    = <Machine-Tape t.Machine> : (e.TapeL) t.TapeH (e.TapeR)
+    = (e.TapeL) (<Rule-Write t.Rule>) (e.TapeR) : e.NewTape
+    = <ShiftTape <Rule-Step t.Rule> e.NewTape> : e.NewTape^
+    = <Machine-Tape t.Machine e.NewTape>;
+}
+
+
+ShiftTape {
+  Right (e.TapeL) t.TapeH (e.TapeR)
+    = e.TapeR : t.NewTapeH e.TapeR^
+    = (e.TapeL t.TapeH) t.NewTapeH (e.TapeR);
+
+  Left (e.TapeL) t.TapeH (e.TapeR)
+    = e.TapeL : e.TapeL^ t.NewTapeH
+    = (e.TapeL) t.NewTapeH (t.TapeH e.TapeR);
+
+  Stay e.Tape = e.Tape;
+}

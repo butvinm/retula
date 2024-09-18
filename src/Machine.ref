@@ -30,6 +30,16 @@ $ENTRY Rule-Read {
 }
 
 
+$ENTRY Rule-Write {
+  [Rule e.Params-B (Write e.Write) e.Params-E] = e.Write;
+}
+
+
+$ENTRY Rule-Next {
+  [Rule e.Params-B (Next e.Next) e.Params-E] = e.Next;
+}
+
+
 $ENTRY Rule-Step {
   [Rule e.Params-B (Step s.Step) e.Params-E] = s.Step;
 }
@@ -70,13 +80,13 @@ $ENTRY Machine-Create {
 
 $ENTRY Machine-State {
   [Machine e.Params-B (State e.State) e.Params-E] = e.State;
-  [Machine e.Params-B (State e._) e.Params-E] (e.State) = [Machine e.Params-B (State e.State) e.Params-E];
+  [Machine e.Params-B (State e._) e.Params-E] e.State = [Machine e.Params-B (State e.State) e.Params-E];
 }
 
 
 $ENTRY Machine-Rules {
   [Machine e.Params-B (Rules e.Rules) e.Params-E] = e.Rules;
-  [Machine e.Params-B (Rules e._) e.Params-E] (e.Rules) = [Machine e.Params-B (Rules e.Rules) e.Params-E];
+  [Machine e.Params-B (Rules e._) e.Params-E] e.Rules = [Machine e.Params-B (Rules e.Rules) e.Params-E];
 }
 
 
@@ -87,7 +97,13 @@ $ENTRY Machine-AppendRule {
 
 $ENTRY Machine-Tape {
   [Machine e.Params-B (Tape e.Tape) e.Params-E] = e.Tape;
-  [Machine e.Params-B (Tape e._) e.Params-E] (e.Tape) = [Machine e.Params-B (Tape e.Tape) e.Params-E];
+  [Machine e.Params-B (Tape e._) e.Params-E] e.Tape = [Machine e.Params-B (Tape e.Tape) e.Params-E];
+}
+
+
+$ENTRY Machine-TraceRepr {
+  [Machine (State e.State) (Rules e.Rules) (Tape (e.TapeL) (e.TapeH) (e.TapeR))]
+    = 'trace ' e.State ' ' (e.TapeL) ' >>' (e.TapeH) '<< ' (e.TapeR);
 }
 
 
@@ -95,5 +111,5 @@ $ENTRY Machine-Repr {
   [Machine (State e.State) (Rules e.Rules) (Tape (e.TapeL) (e.TapeH) (e.TapeR))]
     = <Map { t.Rule = (<Rule-Repr t.Rule>) } e.Rules> : e.RulesReprs
     = <Join ('\n') e.RulesReprs> '\n'
-      'trace ' e.State ' ' <Join (' ') e.TapeL (e.TapeH) e.TapeR>;
+      'trace ' e.State ' ' (e.TapeL) ' | ' (e.TapeH) ' | ' (e.TapeR);
 }

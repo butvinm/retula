@@ -1,0 +1,7 @@
+case MoveRight . . -> MoveRight
+case MoveRight @ @ -> MoveRight
+case MoveRight & & <- MoveLeft
+case MoveLeft . . <- MoveLeft
+case MoveLeft @ @ . Halt
+
+trace MoveRight @ . . . . . &

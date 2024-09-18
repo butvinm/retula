@@ -7,3 +7,8 @@ build:
 .PHONY: test
 test: build
 	python tests/rere.py replay tests/test.list
+
+
+.PHONY: test
+test-record: build
+	python tests/rere.py record tests/test.list

@@ -78,8 +78,8 @@ ParseTrace {
   (t.Machine t.Loc)
   (e.InitState ' ' e.InitTape)
     = <Split e.InitTape> : t.InitTapeH e.InitTapeR
-    = <Machine-Tape t.Machine (() t.InitTapeH (e.InitTapeR))> : t.Machine^
-    = (Success <Machine-State t.Machine (e.InitState)>);
+    = <Machine-Tape t.Machine () t.InitTapeH (e.InitTapeR)> : t.Machine^
+    = (Success <Machine-State t.Machine e.InitState>);
 
   (t.Machine t.Loc)
   e.BadDefinition

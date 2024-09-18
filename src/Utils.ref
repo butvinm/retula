@@ -1,5 +1,5 @@
 *$FROM LibraryEx
-$EXTERN Trim;
+$EXTERN Trim, Apply;
 
 
 $ENTRY Eq {
@@ -10,6 +10,15 @@ $ENTRY Eq {
 
 $ENTRY Prerr {
   e.Message = <Putout stderr e.Message>;
+}
+
+
+$ENTRY Find {
+  t.Pred /* empty */ = (None);
+  t.Pred t.H e.T = <Apply t.Pred t.H> : {
+    True = (Some t.H);
+    False = <Find t.Pred e.T>;
+  };
 }
 
 
