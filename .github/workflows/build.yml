@@ -24,9 +24,8 @@ jobs:
         with:
           path: |
             ~/.local/share/refal-5-lambda
-          key: ${{ runner.os }}-refal-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-refal-
+          key: refal-5-lambda
+          restore-keys: refal-5-lambda
 
       - name: Build Refal-5 compiler
         run: |
