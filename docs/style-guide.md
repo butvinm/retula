@@ -120,7 +120,7 @@ $ENTRY Go {}
 - The `Go` function should be the first function in the module
 - Main function should go before its auxiliary functions
 - Curly brackets `{}` should start on the same line as the function name and ends on the new line
-- Each sentence should end with a semicolon `;`
+- Each sentence should end with a semicolon `;`, except blocks with only one single-line statement
 - Prefer to put empty line between sentences, especially if they are splitted into multiple lines
 - The right part of the sentence should be on the same line as the left part if it fits, otherwise it should be on the new line with an indentation of 2 spaces
 - Condition with simple pattern are split by `:`, `:` goes on the new line with an indentation of 2 spaces. If pattern is a block, its opening curly bracket `{` should be on the same line as the condition and the rest of the block should be indented with 2 spaces
