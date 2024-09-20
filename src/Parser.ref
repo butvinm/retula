@@ -57,15 +57,15 @@ SwParseLine {
 
   (t.Machine t.Loc)
   (e.BadDefinition)
-    = (Fails t.Loc 'Invalid statement. Expected: `trace <state> <tape>` or `case <state> <read> <write> <step> <next>`');
+    = (Fails t.Loc 'Invalid statement. Expected: `trace <state> (<tape-left>) (<tape-right>)` or `case <state> <read> <write> <step> <next>`');
 }
 
 
 ParseRule {
   (t.Machine t.Loc)
-  (e.RuleState ' ' e.RuleRead ' ' e.RuleWrite ' ' e.RuleStep ' ' e.RuleNext)
-    = <Rule-ParseStep e.RuleStep> : s.RuleStep
-    = <Rule-Create (e.RuleState) (e.RuleRead) (e.RuleWrite) (s.RuleStep) (e.RuleNext)> : t.Rule
+  (e.State ' ' e.Read ' ' e.Write ' ' e.Step ' ' e.Next)
+    = <Rule-ParseStep e.Step> : s.Step
+    = <Rule-Create (e.State) (e.Read) (e.Write) (s.Step) (e.Next)> : t.Rule
     = (Success <Machine-AppendRule t.Machine t.Rule>);
 
   (t.Machine t.Loc)
@@ -76,12 +76,26 @@ ParseRule {
 
 ParseTrace {
   (t.Machine t.Loc)
-  (e.InitState ' ' e.InitTape)
-    = <Split e.InitTape> : t.InitTapeH e.InitTapeR
-    = <Machine-Tape t.Machine () t.InitTapeH (e.InitTapeR)> : t.Machine^
-    = (Success <Machine-State t.Machine e.InitState>);
+  (e.State ' ' e.TapeDef)
+    = <ParseTape e.TapeDef> : {
+      (Success e.Tape)
+        = <Machine-Tape t.Machine e.Tape> : t.Machine^
+        = (Success <Machine-State t.Machine e.State>);
+
+      (Fails)
+        = (Fails t.Loc 'Invalid trace definition. Expected: `trace <state> (<tape-left>) (<tape-right>)`');
+    };
 
   (t.Machine t.Loc)
   e.BadDefinition
-    = (Fails t.Loc 'Invalid trace definition. Expected: `trace <state> <tape>`');
+    = (Fails t.Loc 'Invalid trace definition. Expected: `trace <state> (<tape-left>) (<tape-right>)`');
+}
+
+
+ParseTape {
+  '(' e.TapeL ') (' e.TapeR ')' = (Success (<Split e.TapeL>) (<Split e.TapeR>));
+
+  '(' e.TapeR ')' = (Success () (<Split e.TapeR>));
+
+  e.BadDefinition = (Fails);
 }

@@ -4,7 +4,7 @@ $EXTERN
   Machine-State,
   Machine-Tape,
   Machine-Rules,
-  Machine-TraceRepr,
+  Machine-StateRepr,
   Rule-State,
   Rule-Read,
   Rule-Write,
@@ -17,7 +17,7 @@ $EXTERN Find;
 
 $ENTRY Trace {
   t.Machine
-    = <Prout <Machine-TraceRepr t.Machine>> :
+    = <Prout <Machine-StateRepr t.Machine>> :
     = <TraceSw t.Machine>;
 }
 
@@ -45,7 +45,7 @@ $ENTRY TraceStep {
 
 
 MatchRule {
-  (e.State) ((e.TapeL) (e.TapeH) (e.TapeR)) t.Rule
+  (e.State) ((e.TapeL) ((e.TapeH) e.TapeR)) t.Rule
     , <Rule-State t.Rule> : e.State
     , <Rule-Read t.Rule> : e.TapeH
     = True;
@@ -57,21 +57,19 @@ MatchRule {
 ApplyRule {
   t.Machine t.Rule
     = <Machine-State t.Machine <Rule-Next t.Rule>> : t.Machine^
-    = <Machine-Tape t.Machine> : (e.TapeL) t.TapeH (e.TapeR)
-    = (e.TapeL) (<Rule-Write t.Rule>) (e.TapeR) : e.NewTape
-    = <ShiftTape <Rule-Step t.Rule> e.NewTape> : e.NewTape^
+    = <Machine-Tape t.Machine> : (e.TapeL) (t.TapeH e.TapeR)
+    = (<Rule-Write t.Rule>) : t.TapeH^
+    = <ShiftTape <Rule-Step t.Rule> (e.TapeL) (t.TapeH e.TapeR)> : e.NewTape
     = <Machine-Tape t.Machine e.NewTape>;
 }
 
 
 ShiftTape {
-  Right (e.TapeL) t.TapeH (e.TapeR)
-    = e.TapeR : t.NewTapeH e.TapeR^
-    = (e.TapeL t.TapeH) t.NewTapeH (e.TapeR);
+  Right (e.TapeL) (t.TapeH e.TapeR) = (e.TapeL t.TapeH) (e.TapeR);
 
-  Left (e.TapeL) t.TapeH (e.TapeR)
-    = e.TapeL : e.TapeL^ t.NewTapeH
-    = (e.TapeL) t.NewTapeH (t.TapeH e.TapeR);
+  Left (e.TapeL t.TapeH) (e.TapeR) = (e.TapeL) (t.TapeH e.TapeR);
 
   Stay e.Tape = e.Tape;
+
+  s.Step e.Tape = <Prout 'Impossible tape shift: ' s.Step ' ' e.Tape> : = e.Tape;
 }

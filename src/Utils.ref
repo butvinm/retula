@@ -1,5 +1,5 @@
 *$FROM LibraryEx
-$EXTERN Trim, Apply;
+$EXTERN Trim, Apply, UnBracket, Map, Trim-R;
 
 
 $ENTRY Eq {
@@ -33,7 +33,19 @@ $ENTRY Join {
 
 $ENTRY Split {
   e.Str = <Trim e.Str> : {
+    /* empty */ = /* empty */;
     e.Part ' ' e.Rest = (e.Part) <Split e.Rest>;
     e.Part = (e.Part);
   };
+}
+
+
+$ENTRY ListToString {
+  e.List
+    = <Trim-R
+      <Map
+        { t.Item = <UnBracket t.Item> ' ' }
+        e.List
+      >
+    >;
 }

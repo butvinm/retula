@@ -4,4 +4,4 @@ case MoveRight & & <- MoveLeft
 case MoveLeft . . <- MoveLeft
 case MoveLeft @ @ . Halt
 
-trace MoveRight @ . . . . . &
+trace MoveRight () (@ . . . . . &)

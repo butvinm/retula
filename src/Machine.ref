@@ -2,7 +2,7 @@
 $EXTERN Map;
 
 *$FROM Utils
-$EXTERN Join;
+$EXTERN Join, ListToString;
 
 
 $EENUM Rule;
@@ -73,7 +73,7 @@ $ENTRY Machine-Create {
   = [Machine
     (State /* empty */)
     (Rules /* empty */)
-    (Tape () () ())
+    (Tape () ())
   ];
 }
 
@@ -101,15 +101,18 @@ $ENTRY Machine-Tape {
 }
 
 
-$ENTRY Machine-TraceRepr {
-  [Machine (State e.State) (Rules e.Rules) (Tape (e.TapeL) (e.TapeH) (e.TapeR))]
-    = 'trace ' e.State ' ' (e.TapeL) ' >>' (e.TapeH) '<< ' (e.TapeR);
+$ENTRY Machine-StateRepr {
+  [Machine (State e.State) (Rules e.Rules) (Tape (e.TapeL) (e.TapeR))]
+    = <Machine-StateRepr (e.State) ((e.TapeL) (e.TapeR))>;
+
+  (e.State) ((e.TapeL) (e.TapeR))
+    = e.State ' ' (<ListToString e.TapeL>) ' ' (<ListToString e.TapeR>);
 }
 
 
 $ENTRY Machine-Repr {
-  [Machine (State e.State) (Rules e.Rules) (Tape (e.TapeL) (e.TapeH) (e.TapeR))]
+  [Machine (State e.State) (Rules e.Rules) (Tape (e.TapeL) (e.TapeR))]
     = <Map { t.Rule = (<Rule-Repr t.Rule>) } e.Rules> : e.RulesReprs
     = <Join ('\n') e.RulesReprs> '\n'
-      'trace ' e.State ' ' (e.TapeL) ' | ' (e.TapeH) ' | ' (e.TapeR);
+      'trace ' <Machine-StateRepr (e.State) ((e.TapeL) (e.TapeR))>;
 }
