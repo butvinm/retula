@@ -1,3 +1,4 @@
 ./build/retula tests/rtls/inc.rtl
+./build/retula tests/rtls/inc-short-tape.rtl
 ./build/retula tests/rtls/inc-bad.rtl
 ./build/retula tests/rtls/walk.rtl

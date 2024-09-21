@@ -1,6 +1,17 @@
-:i count 3
+:i count 4
 :b shell 33
 ./build/retula tests/rtls/inc.rtl
+:i returncode 0
+:b stdout 74
+Inc () (1 1 0 1 &)
+Inc (0) (1 0 1 &)
+Inc (0 0) (0 1 &)
+Halt (0 0 1) (1 &)
+
+:b stderr 0
+
+:b shell 44
+./build/retula tests/rtls/inc-short-tape.rtl
 :i returncode 0
 :b stdout 74
 Inc () (1 1 0 1 &)
