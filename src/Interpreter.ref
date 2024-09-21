@@ -70,6 +70,4 @@ ShiftTape {
   Left (e.TapeL t.TapeH) (e.TapeR) = (e.TapeL) (t.TapeH e.TapeR);
 
   Stay e.Tape = e.Tape;
-
-  s.Step e.Tape = <Prout 'Impossible tape shift: ' s.Step ' ' e.Tape> : = e.Tape;
 }
