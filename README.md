@@ -18,7 +18,7 @@ git clone https://github.com/butvinm/retula.git
 
 ```sh
 mkdir -p build
-rlc --rich retula.ref -o build/retula
+rlmake -d src --tmp-dir build src/Retula.ref -o build/retula
 ```
 
 ## Usage
@@ -41,8 +41,12 @@ case <Current machine state> <Current head value> <New head value> <Step directi
 Finally, you can use `trace` command to start the machine in a specific state:
 
 ```
-trace <Initial machine state>
+trace <Initial machine state> (<Left tape side>) (<Right tape side>)
 ```
+
+`(<Left tape side>) (<Right tape side>)` represents a tape.
+Head is the first element of the right tape side.
+Left side is optional and can be omitted.
 
 Example of a simple program that increments a binary number:
 
@@ -50,22 +54,22 @@ Example of a simple program that increments a binary number:
 case Inc 0 1 -> Halt
 case Inc 1 0 -> Inc
 
-trace Inc 1 1 0 1 &
+trace Inc (1 1 0 1 &)
 ```
 
 Running it will produce the following output:
 
 ```
-trace Inc () >>(1)<< ((1)(0)(1)(&))
-trace Inc ((0)) >>(1)<< ((0)(1)(&))
-trace Inc ((0)(0)) >>(0)<< ((1)(&))
-trace Halt ((0)(0)(1)) >>(1)<< ((&))
+Inc () (1 1 0 1 &)
+Inc (0) (1 0 1 &)
+Inc (0 0) (0 1 &)
+Halt (0 0 1) (1 &)
 ```
 
 ## Roadmap
 
-- [ ] Better trace output
-- [ ] Allow specify initial tape content
+- [+] Better trace output
+- [+] Allow specify initial tape content
 - [ ] S-expressions in the rules and pattern matching on them (e.g. `case Inc (a b) (b a) -> Inc`)
 - [ ] Sets and rule-comprehensions (e.g. `set Bin = {0, 1}; for a, b in Bin case Inc a b -> Inc`)
 - [ ] Arithmetic operations on the symbols (e.g. `case Inc a (a + 1) -> Halt`)
