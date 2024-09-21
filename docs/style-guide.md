@@ -7,7 +7,9 @@
 
 ## General architecture
 
-- Exit points should only in the main module. If you need to mark auxiliary function as failure, use `(Success ...)` and `(Fails ...)` terms.
+- Exit points should only in the main module.
+- Use `Success t.Result` and `Fails e.Error` to represent a function result.
+- Use `None` and `t.Value` to represent optional values.
 - If function does IO, it should be its only purpose
 - Keep function format aka signature consistent. The only exception is to provide default values or simple arguments format as it is in the arithmetic operations like `<Add>` those allow you to pass first argument either as macrodigit or number. As an example, where different arguments are suitable:
 ```refal
