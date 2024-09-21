@@ -1,0 +1,101 @@
+*$FROM LibraryEx
+$EXTERN MapAccum;
+
+*$FROM Loc
+$EXTERN Loc-Create, Loc-IncLine, Loc-Repr;
+
+*$FROM Utils
+$EXTERN Fatal, Split;
+
+*$FROM Machine
+$EXTERN
+  Rule,
+  Rule-Create,
+  Rule-ParseStep,
+  Machine,
+  Machine-Create,
+  Machine-State,
+  Machine-Rules,
+  Machine-AppendRule,
+  Machine-Tape,
+  Machine-Repr;
+
+
+$ENTRY ParseSource {
+  (e.SourceFile) e.Source
+    = <Loc-Create e.SourceFile> : t.Loc
+    = <MapAccum
+      &ParseLine
+      (<Machine-Create> t.Loc (/* errors */))
+      e.Source
+    >;
+}
+
+
+ParseLine {
+  (t.Machine t.Loc (e.Errors)) t.Line
+    = <Loc-IncLine t.Loc> : t.NextLoc
+    = <SwParseLine (t.Machine t.Loc) t.Line> : {
+      Success t.NextMachine = (t.NextMachine t.NextLoc (e.Errors));
+      Fails t.ErrorLoc e.Error = (t.Machine t.NextLoc (e.Errors (t.ErrorLoc e.Error)));
+    };
+}
+
+
+SwParseLine {
+  (t.Machine t.Loc)
+  (/* empty */)
+    = Success t.Machine;
+
+  (t.Machine t.Loc)
+  ('trace ' e.TraceDefinition)
+    = <ParseTrace (t.Machine t.Loc) (e.TraceDefinition)>;
+
+  (t.Machine t.Loc)
+  ('case ' e.RuleDefinition)
+    = <ParseRule (t.Machine t.Loc) (e.RuleDefinition)>;
+
+  (t.Machine t.Loc)
+  (e.BadDefinition)
+    = Fails t.Loc 'Invalid statement. Expected: `trace <state> (<tape-left>) (<tape-right>)` or `case <state> <read> <write> <step> <next>`';
+}
+
+
+ParseRule {
+  (t.Machine t.Loc)
+  (e.State ' ' e.Read ' ' e.Write ' ' e.Step ' ' e.Next)
+    = <Rule-ParseStep e.Step> : s.Step
+    = <Rule-Create (e.State) (e.Read) (e.Write) (s.Step) (e.Next)> : t.Rule
+    = Success <Machine-AppendRule t.Machine t.Rule>;
+
+  (t.Machine t.Loc)
+  e.BadDefinition
+    = Fails t.Loc 'Invalid rule definition. Expected: `case <state> <read> <write> <step> <next>`';
+}
+
+
+ParseTrace {
+  (t.Machine t.Loc)
+  (e.State ' ' e.TapeDef)
+    = <ParseTape e.TapeDef> : {
+      Success e.Tape
+        = <Machine-Tape t.Machine e.Tape> : t.Machine^
+        = Success <Machine-State t.Machine e.State>;
+
+      Fails
+        = Fails t.Loc 'Invalid trace definition. Expected: `trace <state> (<tape-left>) (<tape-right>)`';
+    };
+
+  (t.Machine t.Loc)
+  e.BadDefinition
+    = Fails t.Loc 'Invalid trace definition. Expected: `trace <state> (<tape-left>) (<tape-right>)`';
+}
+
+
+ParseTape {
+  '(' e.TapeL ') (' e.TapeR ')' = Success (<Split e.TapeL>) (<Split e.TapeR>);
+
+  '(' e.TapeR ')' = Success () (<Split e.TapeR>);
+
+  e.BadDefinition = Fails;
+}

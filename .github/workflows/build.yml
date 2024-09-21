@@ -8,6 +8,10 @@ on:
     branches:
       - master
 
+defaults:
+  run:
+    shell: bash
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,18 +24,19 @@ jobs:
         with:
           path: |
             ~/.local/share/refal-5-lambda
-          key: ${{ runner.os }}-refal-${{ github.sha }}
-          restore-keys: |
-            ${{ runner.os }}-refal-
+          key: refal-5-lambda
+          restore-keys: refal-5-lambda
 
       - name: Build Refal-5 compiler
         run: |
           if [ ! -d "$HOME/.local/share/refal-5-lambda/bin" ]; then
-            curl -L https://example.com/path/to/refal-5-binaries.tar.gz | tar xz -C ~/.local/share/refal-5-lambda
+            curl -L https://bmstu-iu9.github.io/refal-5-lambda/setup.bash | bash
           fi
+
+      - name: Set env vars
+        run: |
           echo "$HOME/.local/share/refal-5-lambda/bin" >> $GITHUB_PATH
           echo "RL_MODULE_PATH=~/.local/share/refal-5-lambda/lib" >> $GITHUB_ENV
-        shell: bash
 
       - name: Run tests
         run: |

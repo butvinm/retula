@@ -1,0 +1,51 @@
+*$FROM LibraryEx
+$EXTERN Trim, Apply, UnBracket, Map, Trim-R;
+
+
+$ENTRY Eq {
+  (e.A) e.A = True;
+  (e.A) e.B = False;
+}
+
+
+$ENTRY Prerr {
+  e.Message = <Putout stderr e.Message>;
+}
+
+
+$ENTRY Find {
+  t.Pred /* empty */ = None;
+  t.Pred t.H e.T = <Apply t.Pred t.H> : {
+    True = t.H;
+    False = <Find t.Pred e.T>;
+  };
+}
+
+
+/* String utils */
+
+$ENTRY Join {
+  (e.Sep) /* empty */ = /* empty */;
+  (e.Sep) (e.H) = e.H;
+  (e.Sep) (e.H) e.T = e.H e.Sep <Join (e.Sep) e.T>;
+}
+
+
+$ENTRY Split {
+  e.Str = <Trim e.Str> : {
+    /* empty */ = /* empty */;
+    e.Part ' ' e.Rest = (e.Part) <Split e.Rest>;
+    e.Part = (e.Part);
+  };
+}
+
+
+$ENTRY ListToString {
+  e.List
+    = <Trim-R
+      <Map
+        { t.Item = <UnBracket t.Item> ' ' }
+        e.List
+      >
+    >;
+}

@@ -1,0 +1,21 @@
+$EENUM Options;
+
+
+$ENTRY Options-Create {
+  e.SourceFile = [Options (SourceFile e.SourceFile)];
+}
+
+
+$ENTRY Options-SourceFile {
+  [Options e.Params-B (SourceFile e.SourceFile) e.Params-E] = e.SourceFile;
+}
+
+
+$ENTRY ParseOptions {
+  (e.Executable) (e.SourceFile) = <ExistFile e.SourceFile> : {
+    True = Success <Options-Create e.SourceFile>;
+    False = Fails 'File ' e.SourceFile ' does not exist';
+  };
+
+  (e.Executable) e.BadArgs = Fails 'Usage: ' e.Executable ' <file>';
+}

@@ -7,7 +7,9 @@
 
 ## General architecture
 
-- Exit points should only in the main module. If you need to mark auxiliary function as failure, use `(Success ...)` and `(Fails ...)` terms.
+- Exit points should only in the main module.
+- Use `Success t.Result` and `Fails e.Error` to represent a function result.
+- Use `None` and `t.Value` to represent optional values.
 - If function does IO, it should be its only purpose
 - Keep function format aka signature consistent. The only exception is to provide default values or simple arguments format as it is in the arithmetic operations like `<Add>` those allow you to pass first argument either as macrodigit or number. As an example, where different arguments are suitable:
 ```refal
@@ -120,7 +122,7 @@ $ENTRY Go {}
 - The `Go` function should be the first function in the module
 - Main function should go before its auxiliary functions
 - Curly brackets `{}` should start on the same line as the function name and ends on the new line
-- Each sentence should end with a semicolon `;`
+- Each sentence should end with a semicolon `;`, except blocks with only one single-line statement
 - Prefer to put empty line between sentences, especially if they are splitted into multiple lines
 - The right part of the sentence should be on the same line as the left part if it fits, otherwise it should be on the new line with an indentation of 2 spaces
 - Condition with simple pattern are split by `:`, `:` goes on the new line with an indentation of 2 spaces. If pattern is a block, its opening curly bracket `{` should be on the same line as the condition and the rest of the block should be indented with 2 spaces

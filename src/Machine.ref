@@ -1,0 +1,118 @@
+*$FROM LibraryEx
+$EXTERN Map;
+
+*$FROM Utils
+$EXTERN Join, ListToString;
+
+
+$EENUM Rule;
+
+
+$ENTRY Rule-Create {
+  (e.State) (e.Read) (e.Write) (e.Step) (e.Next)
+    = [Rule
+      (State e.State)
+      (Read e.Read)
+      (Write e.Write)
+      (Step e.Step)
+      (Next e.Next)
+    ];
+}
+
+
+$ENTRY Rule-State {
+  [Rule e.Params-B (State e.State) e.Params-E] = e.State;
+}
+
+
+$ENTRY Rule-Read {
+  [Rule e.Params-B (Read e.Read) e.Params-E] = e.Read;
+}
+
+
+$ENTRY Rule-Write {
+  [Rule e.Params-B (Write e.Write) e.Params-E] = e.Write;
+}
+
+
+$ENTRY Rule-Next {
+  [Rule e.Params-B (Next e.Next) e.Params-E] = e.Next;
+}
+
+
+$ENTRY Rule-Step {
+  [Rule e.Params-B (Step s.Step) e.Params-E] = s.Step;
+}
+
+
+$ENTRY Rule-ParseStep {
+  '<-' = Left;
+  '->' = Right;
+  '.' = Stay;
+}
+
+
+$ENTRY Rule-ReprStep {
+  Left = '<-';
+  Right = '->';
+  Stay = '.';
+}
+
+
+$ENTRY Rule-Repr {
+  [Rule (State e.State) (Read e.Read) (Write e.Write) (Step s.Step) (Next e.Next)]
+    = <Rule-ReprStep s.Step> : e.Step
+    = 'case ' e.State ' ' e.Read ' ' e.Write ' ' e.Step ' ' e.Next;
+}
+
+
+$EENUM Machine;
+
+
+$ENTRY Machine-Create {
+  = [Machine
+    (State /* empty */)
+    (Rules /* empty */)
+    (Tape () ())
+  ];
+}
+
+
+$ENTRY Machine-State {
+  [Machine e.Params-B (State e.State) e.Params-E] = e.State;
+  [Machine e.Params-B (State e._) e.Params-E] e.State = [Machine e.Params-B (State e.State) e.Params-E];
+}
+
+
+$ENTRY Machine-Rules {
+  [Machine e.Params-B (Rules e.Rules) e.Params-E] = e.Rules;
+  [Machine e.Params-B (Rules e._) e.Params-E] e.Rules = [Machine e.Params-B (Rules e.Rules) e.Params-E];
+}
+
+
+$ENTRY Machine-AppendRule {
+  [Machine e.Params-B (Rules e.Rules) e.Params-E] t.Rule = [Machine e.Params-B (Rules e.Rules t.Rule) e.Params-E];
+}
+
+
+$ENTRY Machine-Tape {
+  [Machine e.Params-B (Tape e.Tape) e.Params-E] = e.Tape;
+  [Machine e.Params-B (Tape e._) e.Params-E] e.Tape = [Machine e.Params-B (Tape e.Tape) e.Params-E];
+}
+
+
+$ENTRY Machine-StateRepr {
+  [Machine (State e.State) (Rules e.Rules) (Tape (e.TapeL) (e.TapeR))]
+    = <Machine-StateRepr (e.State) ((e.TapeL) (e.TapeR))>;
+
+  (e.State) ((e.TapeL) (e.TapeR))
+    = e.State ' ' (<ListToString e.TapeL>) ' ' (<ListToString e.TapeR>);
+}
+
+
+$ENTRY Machine-Repr {
+  [Machine (State e.State) (Rules e.Rules) (Tape (e.TapeL) (e.TapeR))]
+    = <Map { t.Rule = (<Rule-Repr t.Rule>) } e.Rules> : e.RulesReprs
+    = <Join ('\n') e.RulesReprs> '\n'
+      'trace ' <Machine-StateRepr (e.State) ((e.TapeL) (e.TapeR))>;
+}

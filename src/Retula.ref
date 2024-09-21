@@ -1,0 +1,44 @@
+*$FROM LibraryEx
+$EXTERN LoadFile, ArgList, Map;
+
+*$FROM Utils
+$EXTERN Prerr;
+
+*$FROM Parser
+$EXTERN ParseSource;
+
+*$FROM Loc
+$EXTERN Loc-Repr;
+
+*$FROM Options
+$EXTERN ParseOptions, Options-SourceFile;
+
+*$FROM Interpreter
+$EXTERN Trace;
+
+
+$ENTRY Go {
+  = <ParseOptions <ArgList>> : {
+    Success t.Options = <Main t.Options>;
+    Fails e.Error = <Prerr e.Error> : = <Exit 1>;
+  };
+}
+
+
+Main {
+  t.Options
+    = <Options-SourceFile t.Options> : e.SourceFile
+    = <ParseSource (e.SourceFile) <LoadFile e.SourceFile>> : {
+      (t.Machine t._ (/* empty */)) = <Trace t.Machine>;
+      (t.Machine t._ (e.Errors)) = <PrintParserErrors e.Errors> : = <Exit 1>;
+    };
+}
+
+
+PrintParserErrors {
+  e.Errors
+    = <Map
+      { (t.Loc e.Error) = <Prerr <Loc-Repr t.Loc> ': ' e.Error> }
+      e.Errors
+    >;
+}
