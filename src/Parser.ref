@@ -36,8 +36,8 @@ ParseLine {
   (t.Machine t.Loc (e.Errors)) t.Line
     = <Loc-IncLine t.Loc> : t.NextLoc
     = <SwParseLine (t.Machine t.Loc) t.Line> : {
-      (Success t.NextMachine) = (t.NextMachine t.NextLoc (e.Errors));
-      (Fails t.ErrorLoc e.Error) = (t.Machine t.NextLoc (e.Errors (t.ErrorLoc e.Error)));
+      Success t.NextMachine = (t.NextMachine t.NextLoc (e.Errors));
+      Fails t.ErrorLoc e.Error = (t.Machine t.NextLoc (e.Errors (t.ErrorLoc e.Error)));
     };
 }
 
@@ -45,7 +45,7 @@ ParseLine {
 SwParseLine {
   (t.Machine t.Loc)
   (/* empty */)
-    = (Success t.Machine);
+    = Success t.Machine;
 
   (t.Machine t.Loc)
   ('trace ' e.TraceDefinition)
@@ -57,7 +57,7 @@ SwParseLine {
 
   (t.Machine t.Loc)
   (e.BadDefinition)
-    = (Fails t.Loc 'Invalid statement. Expected: `trace <state> (<tape-left>) (<tape-right>)` or `case <state> <read> <write> <step> <next>`');
+    = Fails t.Loc 'Invalid statement. Expected: `trace <state> (<tape-left>) (<tape-right>)` or `case <state> <read> <write> <step> <next>`';
 }
 
 
@@ -66,11 +66,11 @@ ParseRule {
   (e.State ' ' e.Read ' ' e.Write ' ' e.Step ' ' e.Next)
     = <Rule-ParseStep e.Step> : s.Step
     = <Rule-Create (e.State) (e.Read) (e.Write) (s.Step) (e.Next)> : t.Rule
-    = (Success <Machine-AppendRule t.Machine t.Rule>);
+    = Success <Machine-AppendRule t.Machine t.Rule>;
 
   (t.Machine t.Loc)
   e.BadDefinition
-    = (Fails t.Loc 'Invalid rule definition. Expected: `case <state> <read> <write> <step> <next>`');
+    = Fails t.Loc 'Invalid rule definition. Expected: `case <state> <read> <write> <step> <next>`';
 }
 
 
@@ -78,24 +78,24 @@ ParseTrace {
   (t.Machine t.Loc)
   (e.State ' ' e.TapeDef)
     = <ParseTape e.TapeDef> : {
-      (Success e.Tape)
+      Success e.Tape
         = <Machine-Tape t.Machine e.Tape> : t.Machine^
-        = (Success <Machine-State t.Machine e.State>);
+        = Success <Machine-State t.Machine e.State>;
 
-      (Fails)
-        = (Fails t.Loc 'Invalid trace definition. Expected: `trace <state> (<tape-left>) (<tape-right>)`');
+      Fails
+        = Fails t.Loc 'Invalid trace definition. Expected: `trace <state> (<tape-left>) (<tape-right>)`';
     };
 
   (t.Machine t.Loc)
   e.BadDefinition
-    = (Fails t.Loc 'Invalid trace definition. Expected: `trace <state> (<tape-left>) (<tape-right>)`');
+    = Fails t.Loc 'Invalid trace definition. Expected: `trace <state> (<tape-left>) (<tape-right>)`';
 }
 
 
 ParseTape {
-  '(' e.TapeL ') (' e.TapeR ')' = (Success (<Split e.TapeL>) (<Split e.TapeR>));
+  '(' e.TapeL ') (' e.TapeR ')' = Success (<Split e.TapeL>) (<Split e.TapeR>);
 
-  '(' e.TapeR ')' = (Success () (<Split e.TapeR>));
+  '(' e.TapeR ')' = Success () (<Split e.TapeR>);
 
-  e.BadDefinition = (Fails);
+  e.BadDefinition = Fails;
 }

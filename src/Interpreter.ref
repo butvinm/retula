@@ -38,8 +38,8 @@ $ENTRY TraceStep {
       (&MatchRule (<Machine-State t.Machine>) (<Machine-Tape t.Machine>))
       <Machine-Rules t.Machine>
     > : {
-      (Some t.Rule) = <ApplyRule t.Machine t.Rule>;
-      (None) = <Machine-State t.Machine 'RI'>;
+      None = <Machine-State t.Machine 'RI'>;
+      t.Rule = <ApplyRule t.Machine t.Rule>;
     };
 }
 

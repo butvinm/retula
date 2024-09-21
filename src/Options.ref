@@ -13,9 +13,9 @@ $ENTRY Options-SourceFile {
 
 $ENTRY ParseOptions {
   (e.Executable) (e.SourceFile) = <ExistFile e.SourceFile> : {
-    True = (Success <Options-Create e.SourceFile>);
-    False = (Fails 'File ' e.SourceFile ' does not exist');
+    True = Success <Options-Create e.SourceFile>;
+    False = Fails 'File ' e.SourceFile ' does not exist';
   };
 
-  (e.Executable) e.BadArgs = (Fails 'Usage: ' e.Executable ' <file>');
+  (e.Executable) e.BadArgs = Fails 'Usage: ' e.Executable ' <file>';
 }

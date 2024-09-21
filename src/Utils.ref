@@ -14,9 +14,9 @@ $ENTRY Prerr {
 
 
 $ENTRY Find {
-  t.Pred /* empty */ = (None);
+  t.Pred /* empty */ = None;
   t.Pred t.H e.T = <Apply t.Pred t.H> : {
-    True = (Some t.H);
+    True = t.H;
     False = <Find t.Pred e.T>;
   };
 }
